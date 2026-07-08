@@ -1,0 +1,16 @@
+torch
+torchvision
+PyYAML
+numpy
+scipy
+tqdm
+opencv-python
+Pillow
+matplotlib
+tensorboard
+pycocotools
+tidecv
+timm
+thop
+calflops
+psutil

@@ -1,0 +1,57 @@
+__include__: [
+  '../dfine/dfine_hgnetv2_m_custom.yml',
+  '../dataset/substation_detection.yml',
+  '../base/deim.yml'
+]
+
+ram_cache: True
+cache_imgsz: 640
+
+print_freq: 400
+output_dir: ./outputs/deim_m_substation_dswa_dgmf_gqrc
+
+model: DEIM_MG
+
+DEIM_MG:
+  yaml_path: configs/ultralytics-yaml/cfg-improve/dfine-m-dswa-dgmf-gqrc.yaml
+  # pretrained: weight/hgnetv2/PPHGNetV2_B0_stage1_MG.pth
+
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*(bn|norm)).*$'
+      lr: 0.00004
+    -
+      params: '^(?=.*(?:norm|bn)).*$'
+      weight_decay: 0.
+
+  lr: 0.0004
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+
+# Increase to search for the optimal ema
+epoches: 120 # 108 + 12
+
+## Our LR-Scheduler
+flat_epoch: 58    # 4 + stop_epoch // 2
+no_aug_epoch: 12
+
+## Our DataAug
+train_dataloader:
+  pin_memory: True
+  total_batch_size: 6
+  dataset:
+    transforms:
+      policy:
+        epoch: [4, 58, 108]   # list
+
+  collate_fn:
+    mixup_epochs: [4, 58]
+    stop_epoch: 108
+    base_size_repeat: ~
+
+val_dataloader:
+  pin_memory: True
+  total_batch_size: 6

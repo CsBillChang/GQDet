@@ -1,0 +1,26 @@
+num_classes: 1
+remap_mscoco_category: False
+
+train_dataloader:
+  dataset:
+    type: CocoDetection
+    img_folder: ./dataset/substation/train
+    ann_file: ./dataset/substation/annotations/train.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+
+val_dataloader:
+  dataset:
+    type: CocoDetection
+    img_folder: ./dataset/substation/val
+    ann_file: ./dataset/substation/annotations/val.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+
+evaluator:
+  type: CocoEvaluator
+  iou_types: ['bbox']

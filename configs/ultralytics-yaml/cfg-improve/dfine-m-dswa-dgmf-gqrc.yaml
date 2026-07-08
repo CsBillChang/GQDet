@@ -1,0 +1,37 @@
+backbone:
+  # [from, module, args]
+  - [-1, StemBlock, [24, 32, True]] # 0-P2/4
+  - [-1, HG_Stage, [32, 96, 1, 4, False, False, 3, True, 'se']] # 1-P2/4
+  - [-1, HG_Stage, [64, 384, 1, 4, True, False, 3, True, 'se']] # 2-P3/8
+  - [-1, HG_Stage, [128, 768, 3, 4, True, True, 5, True, 'se']]  # 3-P4/16
+  - [-1, HG_Stage, [256, 1536, 1, 4, True, True, 5, True, 'se']] # 4-P5/32
+
+encoder:
+  - [2, ConvNormLayer_fuse, [256, 1, 1]] # 5-P3/8
+  - [3, ConvNormLayer_fuse, [256, 1, 1]] # 6-P4/16
+  - [4, ConvNormLayer_fuse, [256, 1, 1]] # 7-P5/32
+
+  - [-1, TransformerEncoderLayer_DeformableSelfAttention, [1024, 8, 7, 1]] # 8-P5/32 dswa
+
+  - [[8, 6, 5], DGMF, [[3, 5, 7, 9]]] # 9-P4/16
+  - [-1, ConvNormLayer_fuse, [256, 3, 2]] # 10-P5/32
+  - [9, nn.Upsample, [None, 2, "nearest"]] # 11-P3/8
+
+  - [[10, 8], Concat, []] # 12-P5/32
+  - [-1, RepNCSPELAN4, [256, 512, 128, 2, False, 'silu']] # 13-P5/32
+
+  - [[11, 5], Concat, []] # 14-P3/8
+  - [-1, RepNCSPELAN4, [256, 512, 128, 2, False, 'silu']] # 15-P3/8
+
+  - [[13, 9, 15], DGMF, [[3, 5, 7, 9]]] # 16-P4/16
+  - [-1, ConvNormLayer_fuse, [256, 3, 2]] # 17-P5/32
+  - [16, nn.Upsample, [None, 2, "nearest"]] # 18-P3/8
+
+  - [[17, 13], Concat, []] # 19-P5/32
+  - [-1, RepNCSPELAN4, [256, 512, 128, 2, False, 'silu']] # 20-P5/32
+
+  - [[18, 15], Concat, []] # 21-P3/8
+  - [-1, RepNCSPELAN4, [256, 512, 128, 2, False, 'silu']] # 22-P3/8
+
+decoder:
+  - [[22, 16, 20], GQRCDFINETransformer, {"feat_strides":[8, 16, 32], "hidden_dim": 256, "num_levels": 3, "num_layers": 4, "num_points": [3, 6, 3], "dim_feedforward": 1024, "gqrc_scale": 0.20, "gqrc_hidden_dim": 64, "gqrc_detach_boxes": True}]
