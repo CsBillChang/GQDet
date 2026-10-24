@@ -64,7 +64,3 @@ For multi-GPU training, launch the same configuration with `torchrun`:
 ```bash
 torchrun --nproc_per_node=4 train.py -c configs/ultralytics-yaml/deim_m_substation_dswa_dgmf_gqrc.yml --use-amp
 ```
-
-## Notes
-
-This code is provided for manuscript review and reproducibility inspection. The complete training recipe, pretrained weights, and fully detailed implementations will be released when publication constraints permit.
