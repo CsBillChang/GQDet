@@ -8,8 +8,6 @@ GQDet introduces three components in the DEIM pipeline:
 - **DGMF**: a dynamic gated multi-scale feature fusion neck.
 - **GQRC**: a query refinement head for the D-FINE decoder.
 
-The public snapshot keeps the project structure, configuration chain, training entry, and module interfaces used in the paper. Some internal implementation details are simplified for anonymous review and will be updated after the paper process allows a complete release.
-
 ## Project Layout
 
 ```text
